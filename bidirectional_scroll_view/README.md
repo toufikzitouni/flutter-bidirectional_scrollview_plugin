@@ -1,10 +1,8 @@
 # bidirectional_scroll_view
 
-A new flutter plugin project.
+This package allows you to scroll in both horizontal and vertical directions. it works as follows:
 
-## Getting Started
+```dart
+    new BidirectionalScrollViewPlugin(child: <replace with your own widget>)
+```
 
-For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
-
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).

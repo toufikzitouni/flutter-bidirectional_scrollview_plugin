@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 class BidirectionalScrollViewPlugin extends StatefulWidget {
   const BidirectionalScrollViewPlugin({@required this.child});
