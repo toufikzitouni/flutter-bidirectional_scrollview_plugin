@@ -1,0 +1,14 @@
+name: bidirectional_scroll_view
+description: A new flutter plugin project.
+version: 0.0.1
+author:
+homepage:
+
+flutter:
+  plugin:
+    androidPackage: com.yourcompany.bidirectionalscrollview
+    pluginClass: BidirectionalScrollViewPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
