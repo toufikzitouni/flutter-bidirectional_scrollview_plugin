@@ -2,25 +2,30 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class BidirectionalScrollViewPlugin extends StatefulWidget {
-  const BidirectionalScrollViewPlugin({@required this.child});
+  const BidirectionalScrollViewPlugin({@required this.child,
+    this.velocityFactor});
 
   final Widget child;
+  final double velocityFactor;
 
   @override
   State<StatefulWidget> createState() {
-    return new _BidirectionalScrollViewState(child);
+    return new _BidirectionalScrollViewState(child, velocityFactor);
   }
 }
 
 class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     with SingleTickerProviderStateMixin {
-  static const double _kMinFlingVelocity = 1.0;
-
   Widget _child;
+  double velocityFactor = 1.0;
+
   bool enableFling = false;
 
-  _BidirectionalScrollViewState(Widget child) {
+  _BidirectionalScrollViewState(Widget child, double velocityFactor) {
     _child = child;
+    if (velocityFactor != null) {
+      this.velocityFactor = velocityFactor;
+    }
   }
 
   final GlobalKey _containerKey = new GlobalKey();
@@ -42,7 +47,8 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   }
 
   void _handleFlingAnimation() {
-    if (!enableFling || _flingAnimation.value.dx.isNaN || _flingAnimation.value.dy.isNaN) {
+    if (!enableFling || _flingAnimation.value.dx.isNaN ||
+        _flingAnimation.value.dy.isNaN) {
       return;
     }
 
@@ -123,11 +129,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
 
   void _handlePanEnd(DragEndDetails details) {
     final double magnitude = details.velocity.pixelsPerSecond.distance;
-    final double velocity = magnitude / 1000.0;
-
-    if (velocity < _kMinFlingVelocity) {
-      return;
-    }
+    final double velocity = magnitude / 1000;
 
     final Offset direction = details.velocity.pixelsPerSecond / magnitude;
     final double distance = (Offset.zero & context.size).shortestSide;
@@ -138,7 +140,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     enableFling = true;
     _flingAnimation = new Tween<Offset>(
         begin: new Offset(0.0, 0.0),
-        end: direction * distance
+        end: direction * distance * velocityFactor
     ).animate(_controller);
     _controller
       ..value = 0.0

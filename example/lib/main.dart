@@ -20,7 +20,10 @@ class _MyAppState extends State<MyApp> {
           title: new Text('Bidirectional ScrollView Plugin'),
         ),
         body: new Center(
-          child: new BidirectionalScrollViewPlugin(child: _buildWidgets()),
+          child: new BidirectionalScrollViewPlugin(
+            child: _buildWidgets(),
+            velocityFactor: 2.0,
+          ),
         ),
       ),
     );
@@ -31,15 +34,38 @@ class _MyAppState extends State<MyApp> {
 
     for (int i = 0; i < 10; i++) {
       list.add(new Container(
-        margin: new EdgeInsets.all(5.0),
-        color: Colors.grey,
+        padding: new EdgeInsets.all(5.0),
+        color: Colors.white,
         height: 80.0,
         width: 120.0,
+        child: new Container(
+          color: Colors.grey,
+        ),
       ));
     }
 
     return new Row(
       children: [
+        new Column(
+          children: list.map((widget) {
+            return widget;
+          }).toList(),
+        ),
+        new Column(
+          children: list.map((widget) {
+            return widget;
+          }).toList(),
+        ),
+        new Column(
+          children: list.map((widget) {
+            return widget;
+          }).toList(),
+        ),
+        new Column(
+          children: list.map((widget) {
+            return widget;
+          }).toList(),
+        ),
         new Column(
           children: list.map((widget) {
             return widget;
