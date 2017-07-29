@@ -23,6 +23,9 @@ class _MyAppState extends State<MyApp> {
           child: new BidirectionalScrollViewPlugin(
             child: _buildWidgets(),
             velocityFactor: 2.0,
+            scrollListener: (offset) {
+              print(offset.dx.toString() + " " + offset.dy.toString());
+            },
           ),
         ),
       ),

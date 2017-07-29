@@ -3,33 +3,27 @@ import 'package:flutter/foundation.dart';
 
 class BidirectionalScrollViewPlugin extends StatefulWidget {
   const BidirectionalScrollViewPlugin({@required this.child,
-    this.velocityFactor});
+    this.velocityFactor, this.scrollListener});
 
   final Widget child;
   final double velocityFactor;
+  final ValueChanged<Offset> scrollListener;
 
   @override
   State<StatefulWidget> createState() {
-    return new _BidirectionalScrollViewState(child, velocityFactor);
+    return new _BidirectionalScrollViewState(child, velocityFactor,
+        scrollListener);
   }
 }
 
 class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     with SingleTickerProviderStateMixin {
-  Widget _child;
-  double velocityFactor = 1.0;
-
-  bool enableFling = false;
-
-  _BidirectionalScrollViewState(Widget child, double velocityFactor) {
-    _child = child;
-    if (velocityFactor != null) {
-      this.velocityFactor = velocityFactor;
-    }
-  }
-
   final GlobalKey _containerKey = new GlobalKey();
   final GlobalKey _positionedKey = new GlobalKey();
+
+  Widget _child;
+  double _velocityFactor = 1.0;
+  ValueChanged<Offset> _scrollListener;
 
   double xPos = 0.0;
   double yPos = 0.0;
@@ -39,6 +33,19 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   AnimationController _controller;
   Animation<Offset> _flingAnimation;
 
+  bool _enableFling = false;
+
+  _BidirectionalScrollViewState(Widget child, double velocityFactor,
+      ValueChanged<Offset> scrollListener) {
+    _child = child;
+    if (velocityFactor != null) {
+      this._velocityFactor = velocityFactor;
+    }
+    if (scrollListener != null) {
+      _scrollListener = scrollListener;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +54,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   }
 
   void _handleFlingAnimation() {
-    if (!enableFling || _flingAnimation.value.dx.isNaN ||
+    if (!_enableFling || _flingAnimation.value.dx.isNaN ||
         _flingAnimation.value.dy.isNaN) {
       return;
     }
@@ -79,6 +86,8 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
       xViewPos = newXPosition;
       yViewPos = newYPosition;
     });
+
+    _sendScrollValues();
   }
 
   void _handlePanUpdate(DragUpdateDetails details) {
@@ -116,10 +125,12 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
 
     xPos = position.dx;
     yPos = position.dy;
+
+    _sendScrollValues();
   }
 
   void _handlePanDown(DragDownDetails details) {
-    enableFling = false;
+    _enableFling = false;
     final RenderBox referenceBox = context.findRenderObject();
     Offset position = referenceBox.globalToLocal(details.globalPosition);
 
@@ -137,14 +148,20 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     xPos = xViewPos;
     yPos = yViewPos;
 
-    enableFling = true;
+    _enableFling = true;
     _flingAnimation = new Tween<Offset>(
         begin: new Offset(0.0, 0.0),
-        end: direction * distance * velocityFactor
+        end: direction * distance * _velocityFactor
     ).animate(_controller);
     _controller
       ..value = 0.0
       ..fling(velocity: velocity);
+  }
+
+  _sendScrollValues() {
+    if (_scrollListener != null) {
+      _scrollListener(new Offset(-xViewPos, -yViewPos));
+    }
   }
 
   @override
