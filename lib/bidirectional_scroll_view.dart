@@ -17,6 +17,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   static const double _kMinFlingVelocity = 1.0;
 
   Widget _child;
+  bool enableFling = false;
 
   _BidirectionalScrollViewState(Widget child) {
     _child = child;
@@ -41,7 +42,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   }
 
   void _handleFlingAnimation() {
-    if (_flingAnimation.value.dx.isNaN || _flingAnimation.value.dy.isNaN) {
+    if (!enableFling || _flingAnimation.value.dx.isNaN || _flingAnimation.value.dy.isNaN) {
       return;
     }
 
@@ -112,6 +113,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   }
 
   void _handlePanDown(DragDownDetails details) {
+    enableFling = false;
     final RenderBox referenceBox = context.findRenderObject();
     Offset position = referenceBox.globalToLocal(details.globalPosition);
 
@@ -133,6 +135,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     xPos = xViewPos;
     yPos = yViewPos;
 
+    enableFling = true;
     _flingAnimation = new Tween<Offset>(
         begin: new Offset(0.0, 0.0),
         end: direction * distance
@@ -158,7 +161,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
                   top: yViewPos,
                   left: xViewPos,
                   child: _child
-              )
+              ),
             ],
           )
       ),
