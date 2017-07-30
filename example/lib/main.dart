@@ -11,6 +11,27 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  BidirectionalScrollViewPlugin _plugin;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _plugin = new BidirectionalScrollViewPlugin(
+      child: _buildWidgets(),
+      velocityFactor: 2.0,
+      scrollListener: (offset) {
+        print("----------");
+        print("new x and y scroll offset: " + offset.dx.toString() + " " + offset.dy.toString());
+        print("x and y scroll offset getters: " + _plugin.x.toString() + " " + _plugin.y.toString());
+        print("height and width of overscrolled widget: " + _plugin.height.toString() + " " + _plugin.width.toString());
+        print("height and width of the container: " + _plugin.containerHeight.toString() + " " + _plugin.containerWidth.toString());
+        print("----------");
+      },
+    );
+
+    //_plugin.offset = new Offset(10.0, 10.0); // use this method to set a new offset where appropriate
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +41,7 @@ class _MyAppState extends State<MyApp> {
           title: new Text('Bidirectional ScrollView Plugin'),
         ),
         body: new Center(
-          child: new BidirectionalScrollViewPlugin(
-            child: _buildWidgets(),
-            velocityFactor: 2.0,
-            scrollListener: (offset) {
-              print(offset.dx.toString() + " " + offset.dy.toString());
-            },
-          ),
+          child: _plugin
         ),
       ),
     );
