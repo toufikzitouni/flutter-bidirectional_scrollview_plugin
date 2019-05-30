@@ -2,19 +2,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class BidirectionalScrollViewPlugin extends StatefulWidget {
-  BidirectionalScrollViewPlugin({@required this.child,
-    this.velocityFactor, this.scrollListener});
+  BidirectionalScrollViewPlugin({
+    @required this.child,
+    this.velocityFactor,
+    this.scrollListener,
+    this.scrollOverflow = Overflow.visible,
+  });
 
   final Widget child;
   final double velocityFactor;
   final ValueChanged<Offset> scrollListener;
+  final Overflow scrollOverflow;
 
   _BidirectionalScrollViewState _state;
 
   @override
   State<StatefulWidget> createState() {
-    _state = new _BidirectionalScrollViewState(child, velocityFactor,
-        scrollListener);
+    _state = new _BidirectionalScrollViewState(
+        child, velocityFactor, scrollListener);
     return _state;
   }
 
@@ -127,7 +132,8 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   }
 
   void _handleFlingAnimation() {
-    if (!_enableFling || _flingAnimation.value.dx.isNaN ||
+    if (!_enableFling ||
+        _flingAnimation.value.dx.isNaN ||
         _flingAnimation.value.dy.isNaN) {
       return;
     }
@@ -165,7 +171,6 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     RenderBox containerBox = _containerKey.currentContext.findRenderObject();
     double containerWidth = containerBox.size.width;
     double containerHeight = containerBox.size.height;
-
 
     if (newXPosition > 0.0 || width < containerWidth) {
       newXPosition = 0.0;
@@ -211,9 +216,9 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
 
     _enableFling = true;
     _flingAnimation = new Tween<Offset>(
-        begin: new Offset(0.0, 0.0),
-        end: direction * distance * _velocityFactor
-    ).animate(_controller);
+            begin: new Offset(0.0, 0.0),
+            end: direction * distance * _velocityFactor)
+        .animate(_controller);
     _controller
       ..value = 0.0
       ..fling(velocity: velocity);
@@ -232,18 +237,17 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
       onPanUpdate: _handlePanUpdate,
       onPanEnd: _handlePanEnd,
       child: new Container(
-          key: _containerKey,
-          child: new Stack(
-            overflow: Overflow.visible,
-            children: <Widget>[
-              new Positioned(
-                  key: _positionedKey,
-                  top: yViewPos,
-                  left: xViewPos,
-                  child: _child
-              ),
-            ],
-          )
+        key: _containerKey,
+        child: new Stack(
+          overflow: widget.scrollOverflow,
+          children: <Widget>[
+            new Positioned(
+                key: _positionedKey,
+                top: yViewPos,
+                left: xViewPos,
+                child: _child),
+          ],
+        ),
       ),
     );
   }
