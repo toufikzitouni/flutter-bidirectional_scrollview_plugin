@@ -135,6 +135,9 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   }
 
   _afterLayout(_) {
+    if (_childWidth != null && _childHeight != null) {
+      return;
+    }
     final RenderBox renderBox = _childKey.currentContext.findRenderObject();
     setState(() {
       _childWidth = renderBox.size.width;
