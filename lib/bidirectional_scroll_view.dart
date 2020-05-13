@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class BidirectionalScrollViewPlugin extends StatefulWidget {
   BidirectionalScrollViewPlugin({@required this.child,
+    Key key,
     this.childWidth,
     this.childHeight,
     this.velocityFactor,
@@ -11,7 +12,7 @@ class BidirectionalScrollViewPlugin extends StatefulWidget {
     this.scrollDirection,
     this.scrollListener,
     this.scrollOverflow = Overflow.visible,
-  });
+  }): super(key: key);
 
   final Widget child;
   final double childWidth;
