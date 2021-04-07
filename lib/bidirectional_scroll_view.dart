@@ -10,7 +10,7 @@ class BidirectionalScrollViewPlugin extends StatefulWidget {
     this.initialOffset,
     this.scrollDirection,
     this.scrollListener,
-    this.scrollOverflow = Overflow.visible,
+    this.clipBehavior = Clip.none,
   });
 
   final Widget child;
@@ -20,7 +20,7 @@ class BidirectionalScrollViewPlugin extends StatefulWidget {
   final Offset initialOffset;
   final ScrollDirection scrollDirection;
   final ValueChanged<Offset> scrollListener;
-  final Overflow scrollOverflow;
+  final Clip clipBehavior;
 
   _BidirectionalScrollViewState _state;
 
@@ -298,7 +298,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     if (_childWidth == null && _childHeight == null) {
       // This is just a workaround to get the width and height of child widget
       return new Stack(
-        overflow: Overflow.visible,
+        clipBehavior: Clip.none,
         children: <Widget>[
           new Positioned(
               top: 0,
@@ -320,7 +320,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
           key: _containerKey,
           color: Colors.transparent,
           child: new Stack(
-            overflow: widget.scrollOverflow,
+            clipBehavior: widget.clipBehavior,
             children: <Widget>[
               new Positioned(
                 key: _positionedKey,
