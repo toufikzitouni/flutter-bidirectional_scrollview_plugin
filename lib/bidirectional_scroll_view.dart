@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class BidirectionalScrollViewPlugin extends StatefulWidget {
-  BidirectionalScrollViewPlugin({@required this.child,
+  BidirectionalScrollViewPlugin({required this.child,
     this.childWidth,
     this.childHeight,
     this.velocityFactor,
@@ -14,15 +14,15 @@ class BidirectionalScrollViewPlugin extends StatefulWidget {
   });
 
   final Widget child;
-  final double childWidth;
-  final double childHeight;
-  final double velocityFactor;
-  final Offset initialOffset;
-  final ScrollDirection scrollDirection;
-  final ValueChanged<Offset> scrollListener;
+  final double? childWidth;
+  final double? childHeight;
+  final double? velocityFactor;
+  final Offset? initialOffset;
+  final ScrollDirection? scrollDirection;
+  final ValueChanged<Offset>? scrollListener;
   final Overflow scrollOverflow;
 
-  _BidirectionalScrollViewState _state;
+  _BidirectionalScrollViewState? _state;
 
   @override
   State<StatefulWidget> createState() {
@@ -36,46 +36,46 @@ class BidirectionalScrollViewPlugin extends StatefulWidget {
           scrollDirection,
           scrollListener);
     }
-    return _state;
+    return _state!;
   }
 
-  set initialOffset(Offset offset) {
-    _state.initOffset = offset;
+  set initialOffset(Offset? offset) {
+    _state!.initOffset = offset;
   }
 
   // set x and y scroll offset of the overflowed widget
   set offset(Offset offset) {
-    _state.offset = offset;
+    _state!.offset = offset;
   }
 
   // x scroll offset of the overflowed widget
   double get x {
-    return _state.x;
+    return _state!.x;
   }
 
   // x scroll offset of the overflowed widget
   double get y {
-    return _state.y;
+    return _state!.y;
   }
 
   // height of the overflowed widget
   double get height {
-    return _state.height;
+    return _state!.height;
   }
 
   // width of the overflowed widget
   double get width {
-    return _state.width;
+    return _state!.width;
   }
 
   // height of the container that holds the overflowed widget
   double get containerHeight {
-    return _state.containerHeight;
+    return _state!.containerHeight;
   }
 
   // width of the container that holds the overflowed widget
   double get containerWidth {
-    return _state.containerWidth;
+    return _state!.containerWidth;
   }
 }
 
@@ -85,28 +85,28 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   final GlobalKey _positionedKey = new GlobalKey();
   final GlobalKey _childKey = new GlobalKey();
 
-  Widget _child;
-  double _childWidth;
-  double _childHeight;
+  Widget? _child;
+  double? _childWidth;
+  double? _childHeight;
   double _velocityFactor = 1.0;
-  Offset _initialOffset = new Offset(0.0, 0.0);
+  Offset? _initialOffset = new Offset(0.0, 0.0);
   ScrollDirection _scrollDirection = ScrollDirection.both;
-  ValueChanged<Offset> _scrollListener;
+  ValueChanged<Offset>? _scrollListener;
 
   double xPos = 0.0;
   double yPos = 0.0;
   double xViewPos = 0.0;
   double yViewPos = 0.0;
 
-  AnimationController _controller;
-  Animation<Offset> _flingAnimation;
+  AnimationController? _controller;
+  late Animation<Offset> _flingAnimation;
 
   bool _enableFling = false;
 
-  _BidirectionalScrollViewState(Widget child, double childWidth,
-      double childHeight, double velocityFactor,
-      Offset initialOffset, ScrollDirection scrollDirection,
-      ValueChanged<Offset> scrollListener) {
+  _BidirectionalScrollViewState(Widget child, double? childWidth,
+      double? childHeight, double? velocityFactor,
+      Offset? initialOffset, ScrollDirection? scrollDirection,
+      ValueChanged<Offset>? scrollListener) {
     _child = child;
     _childWidth = childWidth;
     _childHeight = childHeight;
@@ -121,14 +121,14 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     }
     if (initialOffset != null) {
       _initialOffset = initialOffset;
-      xViewPos = _initialOffset.dx;
-      yViewPos = _initialOffset.dy;
+      xViewPos = _initialOffset!.dx;
+      yViewPos = _initialOffset!.dy;
     }
   }
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback(_afterLayout);
+    WidgetsBinding.instance!.addPostFrameCallback(_afterLayout);
     super.initState();
     _controller = new AnimationController(vsync: this)
       ..addListener(_handleFlingAnimation);
@@ -138,14 +138,14 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     if (_childWidth != null && _childHeight != null) {
       return;
     }
-    final RenderBox renderBox = _childKey.currentContext.findRenderObject();
+    final RenderBox? renderBox = _childKey.currentContext!.findRenderObject() as RenderBox?;
     setState(() {
-      _childWidth = renderBox.size.width;
+      _childWidth = renderBox!.size.width;
       _childHeight = renderBox.size.height;
     });
   }
 
-  set initOffset(Offset offset) {
+  set initOffset(Offset? offset) {
     setState(() {
       _initialOffset = offset;
     });
@@ -167,22 +167,22 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   }
 
   double get height {
-    RenderBox renderBox = _positionedKey.currentContext.findRenderObject();
+    RenderBox renderBox = _positionedKey.currentContext!.findRenderObject() as RenderBox;
     return renderBox.size.height;
   }
 
   double get width {
-    RenderBox renderBox = _positionedKey.currentContext.findRenderObject();
+    RenderBox renderBox = _positionedKey.currentContext!.findRenderObject() as RenderBox;
     return renderBox.size.width;
   }
 
   double get containerHeight {
-    RenderBox containerBox = _containerKey.currentContext.findRenderObject();
+    RenderBox containerBox = _containerKey.currentContext!.findRenderObject() as RenderBox;
     return containerBox.size.height;
   }
 
   double get containerWidth {
-    RenderBox containerBox = _containerKey.currentContext.findRenderObject();
+    RenderBox containerBox = _containerKey.currentContext!.findRenderObject() as RenderBox;
     return containerBox.size.width;
   }
 
@@ -195,14 +195,14 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     double newXPosition = xPos + _flingAnimation.value.dx;
     double newYPosition = yPos + _flingAnimation.value.dy;
 
-    if (newXPosition > _initialOffset.dx || width < containerWidth) {
-      newXPosition = _initialOffset.dx;
+    if (newXPosition > _initialOffset!.dx || width < containerWidth) {
+      newXPosition = _initialOffset!.dx;
     } else if (-newXPosition + containerWidth > width) {
       newXPosition = containerWidth - width;
     }
 
-    if (newYPosition > _initialOffset.dy || height < containerHeight) {
-      newYPosition = _initialOffset.dy;
+    if (newYPosition > _initialOffset!.dy || height < containerHeight) {
+      newYPosition = _initialOffset!.dy;
     } else if (-newYPosition + containerHeight > height) {
       newYPosition = containerHeight - height;
     }
@@ -216,25 +216,25 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
   }
 
   void _handlePanUpdate(DragUpdateDetails details) {
-    final RenderBox referenceBox = context.findRenderObject();
+    final RenderBox referenceBox = context.findRenderObject() as RenderBox;
     Offset position = referenceBox.globalToLocal(details.globalPosition);
 
     double newXPosition = xViewPos + (position.dx - xPos);
     double newYPosition = yViewPos + (position.dy - yPos);
 
-    RenderBox containerBox = _containerKey.currentContext.findRenderObject();
+    RenderBox containerBox = _containerKey.currentContext!.findRenderObject() as RenderBox;
     double containerWidth = containerBox.size.width;
     double containerHeight = containerBox.size.height;
 
 
-    if (newXPosition > _initialOffset.dx || width < containerWidth) {
-      newXPosition = _initialOffset.dx;
+    if (newXPosition > _initialOffset!.dx || width < containerWidth) {
+      newXPosition = _initialOffset!.dx;
     } else if (-newXPosition + containerWidth > width) {
       newXPosition = containerWidth - width;
     }
 
-    if (newYPosition > _initialOffset.dy || height < containerHeight) {
-      newYPosition = _initialOffset.dy;
+    if (newYPosition > _initialOffset!.dy || height < containerHeight) {
+      newYPosition = _initialOffset!.dy;
     } else if (-newYPosition + containerHeight > height) {
       newYPosition = containerHeight - height;
     }
@@ -252,7 +252,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
 
   void _handlePanDown(DragDownDetails details) {
     _enableFling = false;
-    final RenderBox referenceBox = context.findRenderObject();
+    final RenderBox referenceBox = context.findRenderObject() as RenderBox;
     Offset position = referenceBox.globalToLocal(details.globalPosition);
 
     xPos = position.dx;
@@ -264,7 +264,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     final double velocity = magnitude / 1000;
 
     final Offset direction = details.velocity.pixelsPerSecond / magnitude;
-    final double distance = (Offset.zero & context.size).shortestSide;
+    final double distance = (Offset.zero & context.size!).shortestSide;
 
     xPos = xViewPos;
     yPos = yViewPos;
@@ -273,33 +273,32 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
     _flingAnimation = new Tween<Offset>(
         begin: new Offset(0.0, 0.0),
         end: direction * distance * _velocityFactor
-    ).animate(_controller);
-    _controller
+    ).animate(_controller!);
+    _controller!
       ..value = 0.0
       ..fling(velocity: velocity);
   }
 
   _sendScrollValues() {
     if (_scrollListener != null) {
-      _scrollListener(new Offset(-xViewPos, -yViewPos));
+      _scrollListener!(new Offset(-xViewPos, -yViewPos));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (_scrollDirection == ScrollDirection.horizontal) {
-      yViewPos = _initialOffset.dy;
+      yViewPos = _initialOffset!.dy;
     }
 
     if (_scrollDirection == ScrollDirection.vertical) {
-      xViewPos = _initialOffset.dx;
+      xViewPos = _initialOffset!.dx;
     }
 
     if (_childWidth == null && _childHeight == null) {
       // This is just a workaround to get the width and height of child widget
       return new Stack(
-        overflow: Overflow.visible,
-        children: <Widget>[
+        clipBehavior: Clip.none, children: <Widget>[
           new Positioned(
               top: 0,
               left: 0,
@@ -320,7 +319,7 @@ class _BidirectionalScrollViewState extends State<BidirectionalScrollViewPlugin>
           key: _containerKey,
           color: Colors.transparent,
           child: new Stack(
-            overflow: widget.scrollOverflow,
+            clipBehavior: Clip.none,
             children: <Widget>[
               new Positioned(
                 key: _positionedKey,
